@@ -3,31 +3,35 @@ import NewsBanner from '../../components/NewsBanner/NewsBanner'
 import styles from './styles.module.css'
 import { getNews } from '../../api/apiNews'
 import NewsList from '../../NewsList/NewsList'
+import Skeleton from '../../components/Skeleton/Skeleton'
 
 const Main = () => {
     const [news, setNews] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchNews = async () => {
             try {
+                setIsLoading(true)
                 const response = await getNews()
+                setIsLoading(false)
                 setNews(response.news)
             }
-            catch(e) {
+            catch (e) {
                 console.log(e)
             }
         }
         fetchNews()
     }, [])
 
-   return (
-      <main className={styles.main}>
-        {news.length > 0 ? <NewsBanner item={news[0]}/> : null}
+    return (
+        <main className={styles.main}>
+            {news.length > 0 && !isLoading ? <NewsBanner item={news[0]} /> : <Skeleton count={1} type={'banner'} />}
 
 
-        <NewsList news={news}/>
-      </main>
-   )
+            {!isLoading ? <NewsList news={news} /> : <Skeleton count={10} type={'item'} />}
+        </main>
+    )
 }
 
 export default Main
